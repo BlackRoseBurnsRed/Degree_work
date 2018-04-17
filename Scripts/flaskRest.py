@@ -1,5 +1,9 @@
 from flask import Flask, jsonify, request, abort
 import quandl
+import datetime
+
+
+quandl.ApiConfig.api_key = "1jJjn5RzWYyAHbS7_viP"
 
 app = Flask(__name__)
 
@@ -25,10 +29,14 @@ def index():
 @app.route('/aapl', methods=['GET'])
 def get_aapl():
     aapl = quandl.get("WIKI/AAPL", start_date="2006-10-01", end_date="2012-01-01")
-    close_price = []
-    for a in aapl['Close']:
-        close_price.append(a)
-    return jsonify({'aapl_close': close_price})
+    close_last_ten = (aapl['Close'][-10:]).to_dict()
+    data = []
+    for a in close_last_ten.items():
+        print(a[0].to_datetime().date())
+        data.append({a[0].to_datetime().date().strftime('%m/%d/%Y'): a[1]})
+
+    print(data)
+    return jsonify({'aapl_close': data})
 
 @app.route('/todo/api/v1.0/tasks', methods=['GET'])
 def get_tasks():
@@ -54,4 +62,4 @@ def create_task():
     return jsonify({'task': task}), 201
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=int("8080"))
