@@ -1,0 +1,1 @@
+Intelligent forex analysis system
