@@ -28,7 +28,8 @@ def index():
 
 @app.route('/aapl', methods=['GET'])
 def get_aapl():
-    aapl = quandl.get("WIKI/AAPL", start_date="2006-10-01", end_date="2012-01-01")
+    aapl = quandl.get("WIKI/AAPL", start_date="2012-01-01", end_date="2012-01-10")
+    print(aapl[-3:].size)
     close_last_ten = (aapl['Close'][-10:]).to_dict()
     data = []
     for a in close_last_ten.items():
