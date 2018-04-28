@@ -1,0 +1,5 @@
+ul li {
+    list-style-type: none;
+    display: inline-block;
+    margin: 10px 25px;
+}

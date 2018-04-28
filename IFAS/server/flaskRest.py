@@ -1,38 +1,29 @@
+import os
 from flask import Flask, jsonify, request, abort
 import quandl
 
-app = Flask(__name__)
+quandl.ApiConfig.api_key = "1jJjn5RzWYyAHbS7_viP"
 
-tasks = [
-    {
-        'id': 1,
-        'title': u'Buy groceries',
-        'description': u'Milk, Cheese, Pizza, Fruit, Tylenol',
-        'done': False
-    },
-    {
-        'id': 2,
-        'title': u'Learn Python',
-        'description': u'Need to find a good Python tutorial on the web',
-        'done': False
-    }
-]
+app = Flask(__name__)
 
 @app.route('/')
 def index():
     return "Hello, World!"
 
-@app.route('/aapl', methods=['GET'])
-def get_aapl():
-    aapl = quandl.get("WIKI/AAPL", start_date="2006-10-01", end_date="2012-01-01")
-    close_price = []
-    for a in aapl['Close']:
-        close_price.append(a)
-    return jsonify({'aapl_close': close_price})
+@app.route('/models', methods=['GET'])
+def get_models():
+    files = os.listdir('models')
+    resp = jsonify({'models': files})
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
-@app.route('/todo/api/v1.0/tasks', methods=['GET'])
-def get_tasks():
-    return jsonify({'tasks': tasks})
+@app.route('/getShareValues', methods=['GET'])
+def get_share_values():
+    share_values = quandl.get(request.args['companyCode'], start_date="2011-10-01", end_date="2012-01-01")[-1:].to_dict()
+    print(share_values['Open'][list(share_values['Open'].keys())[0]])
+    resp = jsonify({'companyCode': request.args['companyCode'], 'shareValues': "123"})
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 @app.route('/todo/api/v1.0/tasks/<int:task_id>', methods=['GET'])
 def get_task(task_id):
@@ -54,4 +45,4 @@ def create_task():
     return jsonify({'task': task}), 201
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8080)
